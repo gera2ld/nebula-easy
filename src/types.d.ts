@@ -7,6 +7,7 @@ interface INebulaHost {
   name: string;
   ip: string;
   relay: boolean;
+  publicIp: string;
 }
 
 interface INebulaNetwork {

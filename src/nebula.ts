@@ -1,4 +1,5 @@
 import { runCommand } from "https://raw.githubusercontent.com/gera2ld/deno-lib/main/lib/cli.ts";
+import { limitConcurrency } from "https://raw.githubusercontent.com/gera2ld/deno-lib/main/lib/util.ts";
 
 const nebulaCert = Deno.env.get("NEBULA_CERT") || "nebula-cert";
 const dataPath = "db.json";
@@ -9,6 +10,7 @@ let nebulaData: INebulaData = {
 };
 
 let id = 0;
+const limitedTransaction = limitConcurrency(transaction, 1);
 
 async function transaction<T>(
   callback: (params: ITransactionParams) => Promise<T>,
@@ -24,7 +26,7 @@ async function transaction<T>(
 }
 
 export function createCA(name: string) {
-  return transaction(async ({ cwd }) => {
+  return limitedTransaction(async ({ cwd }) => {
     const cmd = [nebulaCert, "ca", "-name", name];
     console.info("$", cmd.join(" "));
     await runCommand({
@@ -47,8 +49,10 @@ export function signCert(params: {
   ip: string;
   pub?: string;
 }) {
-  return transaction(async ({ cwd }) => {
-    if (!nebulaData.ca || !nebulaData.secrets.ca) throw new Error('CA not found');
+  return limitedTransaction(async ({ cwd }) => {
+    if (!nebulaData.ca || !nebulaData.secrets.ca) {
+      throw new Error("CA not found");
+    }
     await Deno.writeTextFile(`${cwd}/ca.key`, nebulaData.secrets.ca.key);
     await Deno.writeTextFile(`${cwd}/ca.crt`, nebulaData.ca.crt);
     if (params.pub) await Deno.writeTextFile(`${cwd}/host.pub`, params.pub);
