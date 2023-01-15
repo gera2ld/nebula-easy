@@ -2,11 +2,13 @@
 
 This is a dashboard for [nebula](https://github.com/slackhq/nebula).
 
-Note: This dashboard only helps you to manage devices and generate the configuration and certificates. But you still have to deploy the files on your devices by yourself.
+Note: It only helps you to manage devices and generate the configuration and certificates. But you still have to deploy the files on your devices by yourself.
 
 ## Usage
 
-Create a `docker-compose.yml` for the dashboard:
+### Dashboard
+
+Create a `docker-compose.yml`:
 
 ```yml
 version: '3'
@@ -19,6 +21,15 @@ services:
     volumes:
       - './data:/app/data'
 ```
+
+Then visit `http://localhost:4000` and manage your networks and hosts. All data (including CA) will be stored in `./data/db.json`.
+
+Note:
+
+- The dashboard only helps you to generates configuration and certificates, the whole process can be done offline.
+- The dashboard should not be exposed to the public because it contains the root CA. One choice is to deploy it on your personal laptop.
+
+### Lighthouse / Host
 
 After creating a network and devices, download the configuration for each device and copy the the corresponding device.
 
