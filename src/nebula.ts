@@ -47,7 +47,7 @@ export function createCA(name: string) {
 
 export function signCert(params: {
   name: string;
-  ip: string;
+  ipRange: string;
   pub?: string;
 }) {
   return limitedTransaction(async ({ cwd }) => {
@@ -63,7 +63,7 @@ export function signCert(params: {
       "-name",
       params.name,
       "-ip",
-      params.ip,
+      params.ipRange,
       ...params.pub
         ? [
           "-in-pub",

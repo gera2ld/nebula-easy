@@ -63,6 +63,9 @@ await serve(async (request: Request) => {
       headers,
     });
   } catch {
+    // fallback
+  }
+  try {
     return new Response(
       await loadFallback(),
       {
@@ -71,5 +74,12 @@ await serve(async (request: Request) => {
         },
       },
     );
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      return new Response('File not found', {
+        status: 404,
+      });
+    }
+    throw err;
   }
 }, { port });
