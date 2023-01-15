@@ -3,7 +3,7 @@ import { limitConcurrency } from "https://raw.githubusercontent.com/gera2ld/deno
 import type { INebulaData, ITransactionParams } from "./types.ts";
 
 const nebulaCert = Deno.env.get("NEBULA_CERT") || "nebula-cert";
-const dataPath = Deno.env.get('DATA_PATH') || 'data/db.json';
+const dataPath = Deno.env.get("DATA_PATH") || "data/db.json";
 
 let nebulaData: INebulaData = {
   secrets: {},
@@ -69,9 +69,10 @@ export function signCert(params: {
           "-in-pub",
           "host.pub",
         ]
-        : [],
-      "-out-key",
-      "host.key",
+        : [
+          "-out-key",
+          "host.key",
+        ],
       "-out-crt",
       "host.crt",
     ];
