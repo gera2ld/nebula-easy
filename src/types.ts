@@ -1,8 +1,8 @@
-interface ITransactionParams {
+export interface ITransactionParams {
   cwd: string;
 }
 
-interface INebulaHost {
+export interface INebulaHost {
   type: "lighthouse" | "host";
   name: string;
   ip: string;
@@ -10,14 +10,14 @@ interface INebulaHost {
   publicIp: string;
 }
 
-interface INebulaNetwork {
+export interface INebulaNetwork {
   name: string;
   ip: string;
   staticHostMap: Record<string, string[]>;
   hosts: INebulaHost[];
 }
 
-interface INebulaData {
+export interface INebulaData {
   ca?: {
     name: string;
     crt: string;

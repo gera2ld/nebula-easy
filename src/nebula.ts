@@ -1,8 +1,9 @@
 import { runCommand } from "https://raw.githubusercontent.com/gera2ld/deno-lib/main/lib/cli.ts";
 import { limitConcurrency } from "https://raw.githubusercontent.com/gera2ld/deno-lib/main/lib/util.ts";
+import type { INebulaData, ITransactionParams } from "./types.ts";
 
 const nebulaCert = Deno.env.get("NEBULA_CERT") || "nebula-cert";
-const dataPath = "db.json";
+const dataPath = Deno.env.get('DATA_PATH') || 'data/db.json';
 
 let nebulaData: INebulaData = {
   secrets: {},
