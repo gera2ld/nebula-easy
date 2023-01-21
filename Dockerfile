@@ -1,15 +1,15 @@
-FROM node AS node-builder
+FROM --platform=$BUILDPLATFORM node AS node-builder
 
 WORKDIR /app
 COPY nebula-web /app
 RUN npm i pnpm -g && pnpm i && pnpm build
 
-FROM golang:alpine AS go-builder
+FROM --platform=$BUILDPLATFORM golang:alpine AS go-builder
 
 WORKDIR /app
 COPY go.mod main.go /app
 COPY --from=node-builder /app/build /app/dist
-RUN go build -ldflags '-s -w' -o /usr/local/bin/nebula-easy
+RUN GOOS=linux GOARCH=$TARGETARCH go build -ldflags '-s -w' -o /usr/local/bin/nebula-easy
 
 FROM gera2ld/nebula as nebula
 
