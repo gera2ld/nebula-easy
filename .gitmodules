@@ -1,0 +1,3 @@
+[submodule "nebula-web"]
+	path = nebula-web
+	url = https://github.com/gera2ld/nebula-web.git
