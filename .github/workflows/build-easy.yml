@@ -1,17 +1,37 @@
 name: Build Easy
 
 on:
-  workflow_run:
-    workflows: [Build Nebula]
-    types:
-      - completed
   workflow_dispatch:
+  push:
+    tags:
+      - v*
+
+permissions:
+  contents: write
 
 jobs:
   docker:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 7
+      - run: |
+          cd nebula-web && pnpm i && pnpm build && cd ..
+          ./build.sh
+
+          IMAGE_TAG=gera2ld/nebula-easy:latest
+          TAG=${GITHUB_REF#refs/tags/}
+          if [ "$TAG" != "$GITHUB_REF" ]; then
+            IMAGE_TAG=$IMAGE_TAG,gera2ld/nebula-easy:$TAG
+          fi
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       - name: Login to DockerHub
@@ -22,6 +42,12 @@ jobs:
       - name: Build gera2ld/nebula-easy
         uses: docker/build-push-action@v3
         with:
+          context: .
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: gera2ld/nebula-easy:latest
+          tags: ${{ env.IMAGE_TAG }}
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: bin/*
