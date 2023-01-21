@@ -14,9 +14,10 @@ import (
 )
 
 var nebulaCert = readEnv("NEBULA_CERT", "nebula-cert")
-var dataPath = readEnv("DATA_PATH", "data/db.json")
+var dataPath = readEnv("NEBULA_EASY_DATA", "data/db.json")
+var bind = readEnv("NEBULA_EASY_BIND", ":4000")
 
-//go:embed all:dist/*
+//go:embed all:nebula-web/build/*
 var staticFs embed.FS
 
 type NebulaCA struct {
@@ -160,13 +161,16 @@ func handleApi(w http.ResponseWriter, r *http.Request) {
 func main() {
 	loadData()
 	http.HandleFunc("/api/", handleApi)
-	fsDist, err := fs.Sub(staticFs, "dist")
+	fsDist, err := fs.Sub(staticFs, "nebula-web/build")
 	if err != nil {
 		log.Fatal(err)
 	}
 	fs := http.FileServer(&SpaFileSystem{http.FS(fsDist)})
 	http.Handle("/", fs)
-	http.ListenAndServe(":4000", nil)
+	err = http.ListenAndServe(bind, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func RunCommandSafely(name string, args []string, cwd string) error {
