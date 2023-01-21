@@ -2,19 +2,16 @@ name: Build Nebula
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - 'main'
-    paths-ignore:
-      - '.github/**'
-      - .vim/**
-      - .gitignore
-      - README.md
 
 jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
+      - name: Check latest version
+        run: |
+          NEBULA_VERSION=$(curl -fsSI https://github.com/slackhq/nebula/releases/latest | sed -n '/tag/s/.*\/v\(.*\)/\1/p' | tr -d \\r | tr -d \\n)
+          curl -fsSL https://hub.docker.com/v2/repositories/gera2ld/nebula/tags/$NEBULA_VERSION && echo "$NEBULA_VERSION already exists" && exit 1 || true
+          echo "NEBULA_VERSION=$NEBULA_VERSION" >> $GITHUB_ENV
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       - name: Login to DockerHub
@@ -28,4 +25,4 @@ jobs:
           file: ./nebula.Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: gera2ld/nebula:latest
+          tags: gera2ld/nebula:latest,gera2ld/nebula:${{env.NEBULA_VERSION}}
