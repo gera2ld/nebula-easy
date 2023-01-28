@@ -1,5 +1,8 @@
 # NebulaEasy
 
+> **Warning**  
+> GIVEN UP! Nebula is hard to use and does not support NATs well. I moved to Netmaker.
+
 This is a dashboard for [nebula](https://github.com/slackhq/nebula).
 
 Note: It only helps you to manage devices and generate the configuration and certificates. But you still have to deploy the files on your devices by yourself.
